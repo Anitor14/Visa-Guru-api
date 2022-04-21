@@ -23,7 +23,7 @@ const register = async (req, res) => {
   const tokenUser = createTokenUser(user); // {username:user.name , userId: user.id, role: user.role}
   //attach cookies to the response.
   const jwtToken = attachCookiesToResponse({ res, user: tokenUser });
-  res.status(StatusCodes.CREATED).json({ user: tokenUser, token: jwtToken });
+  res.status(StatusCodes.CREATED).json({ user: user, token: jwtToken });
 };
 
 const login = async (req, res) => {
@@ -33,7 +33,7 @@ const login = async (req, res) => {
     throw new CustomError.BadRequestError("Please provide email and password");
   }
   //returns a promise which is the user.
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
     throw new CustomError.UnauthenticatedError("Invalid Credentials");
@@ -44,9 +44,9 @@ const login = async (req, res) => {
   }
 
   const tokenUser = createTokenUser(user);
-  attachCookiesToResponse({ res, user: tokenUser });
+  const jwtToken = attachCookiesToResponse({ res, user: tokenUser });
 
-  res.status(StatusCodes.OK).json({ user: tokenUser });
+  res.status(StatusCodes.OK).json({ user: user, token: jwtToken });
 };
 
 const logout = (req, res) => {
