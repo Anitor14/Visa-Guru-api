@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -54,5 +55,9 @@ UserSchema.methods.comparePassword = async function (canditatePassword) {
   const isMatch = await bcrypt.compare(canditatePassword, this.password);
   return isMatch;
 };
+
+// UserSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+//   if (this.passwordChangedAt) {}
+// };
 
 module.exports = mongoose.model("User", UserSchema);
